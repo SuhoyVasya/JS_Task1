@@ -2,13 +2,18 @@
 lazyeater = {
 	recursionControl: [],
 
+	clone:function(feed){
+		toObj={};
+		Object.assign(toObj,feed);
+		return toObj;
+	},
+
 	eat:function(feed){
-		this.stomach=feed;
+		this.buffer=feed;
 		return "omnomnom";
 	},
 	
 	
-
 	getArgs:function(func){
 		num = func.length;
 		var array = [];
@@ -41,23 +46,28 @@ lazyeater = {
 		return result;
 	},
 	
-	isAlreadyDigesting:function(food){	
+	checkDigesting:function(food){	
 		maxIndex=this.recursionControl.length;
 		for(var l=0;l<maxIndex;l++){
 			if(this.recursionControl[l]===food){
-				return true;
+				var str = "Öèêëè÷åñêàÿ çàâèñèìîñòü: ";
+				for(var h=l; h<this.recursionControl.length;h++){
+					str = str+this.recursionControl[h]+"->";
+				}
+				str = str+food;
+				this.recursionControl=[];				
+				throw str;
 			}		
 		}
 		this.recursionControl[maxIndex]=food;
 		return false;
 	},
 
+
+
 	calc:function(obj, name){		
 		if((typeof obj[name])=="function"){
-			if(this.isAlreadyDigesting(name)){
-				recursionControl=[];
-				throw "ÖÈÊËÈ×ÅÑÊÀß ÇÀÂÈÑÈÌÎÑÒÜ! ß ÎÒÊÀÇÛÂÀÞÑÜ ÐÀÁÎÒÀÒÜ Â ÒÀÊÈÕ ÓÑËÎÂÈßÕ!!!"
-			}		
+			this.checkDigesting(name);
 			var args = this.getArgs(obj[name]);		
 			if(args.length>0)
 			{						
@@ -73,9 +83,12 @@ lazyeater = {
 			return  obj[name];
 		}
 	},
+
+
 	
 
 	crap:function(food){
+		this.stomach=this.clone(this.buffer);
 		result = this.calc(this.stomach,food);
 		this.recursionControl=[];
 		return result;
@@ -86,19 +99,29 @@ lazyeater = {
 	
 }
 
+
+
+
+
 eagereater = {
 	recursionControl: [],
 
+	clone:function(feed){
+		toObj={};
+		Object.assign(toObj,feed);
+		return toObj;
+	},
+
 	eat:function(food){
-		this.stomach=food;
+		this.buffer=food;
+		this.stomach=this.clone(this.buffer);
 		for(var everyBitOfFood in this.stomach){
 			this.calc(this.stomach,everyBitOfFood);
-		}
-		this.recursionControl=[];	
+			this.recursionControl=[];
+		}		
 		return "omnomnom";		
-	},
-	
-	
+	},	
+
 
 	getArgs:function(func){
 		num = func.length;
@@ -132,11 +155,17 @@ eagereater = {
 		return result;
 	},
 	
-	isAlreadyDigesting:function(food){	
+	checkDigesting:function(food){	
 		maxIndex=this.recursionControl.length;
 		for(var l=0;l<maxIndex;l++){
 			if(this.recursionControl[l]===food){
-				return true;
+				var str = "Öèêëè÷åñêàÿ çàâèñèìîñòü: ";
+				for(var h=l; h<this.recursionControl.length;h++){
+					str = str+this.recursionControl[h]+"->";
+				}
+				str = str+food;
+				this.recursionControl=[];				
+				throw str;
 			}		
 		}
 		this.recursionControl[maxIndex]=food;
@@ -145,10 +174,7 @@ eagereater = {
 
 	calc:function(obj, name){		
 		if((typeof obj[name])=="function"){
-			if(this.isAlreadyDigesting(name)){
-				recursionControl=[];
-				throw "ÖÈÊËÈ×ÅÑÊÀß ÇÀÂÈÑÈÌÎÑÒÜ! ß ÎÒÊÀÇÛÂÀÞÑÜ ÐÀÁÎÒÀÒÜ Â ÒÀÊÈÕ ÓÑËÎÂÈßÕ!!!"
-			}		
+			this.checkDigesting(name);
 			var args = this.getArgs(obj[name]);		
 			if(args.length>0)
 			{						
@@ -166,9 +192,8 @@ eagereater = {
 	},
 	
 
-	crap:function(bitOfFood){
-		result = this.stomach[bitOfFood];
-		this.recursionControl=[];
+	crap:function(bitOfFood){		
+		result = this.stomach[bitOfFood];		
 		return result;
 	},
 	
@@ -187,15 +212,19 @@ const amazingFood = {
 
 
 const badFood = {
-  n: (xs) => {},  
-  xs: (n) => {}
+  e: (b) => {},
+  b: (a) => {},	
+  a: (f,g) => {},  
+  d: (b) => {},  
+  c: (b) => {},
+  f: (c,d,e) => {},
+  g: (c,d,e) => {},		
 }
 
 
-lazyeater.eat(amazingFood);
-lazyeater.crap("v");
-
 eagereater.eat(badFood);
+console.log(badFood);
+
 
 
 
